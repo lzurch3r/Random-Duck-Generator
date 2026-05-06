@@ -83,5 +83,5 @@ fn read_file(filename: &String) -> Vec<String> {
 }
 
 fn save_to_file(filename: String) {
-    //println!("File {} has been saved!", filename);
+    println!("File {} has been saved!", filename);
 }
