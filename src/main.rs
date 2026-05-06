@@ -4,33 +4,52 @@ use std::io;
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     //Initialize variables
-    let filename = format!("src/ducks.txt");
+    let filename = format!("src/favorites.txt");
     let url = format!("https://ducks.now/api/v0/random");
 
-    //Prompt user to view new image or favorites list
-    println!("View new image or view favorites list:");
+    //Prompt user to view new image or view favorites list
+    println!("MAIN MENU\nType a number:");
+    println!("1. View random duck image");
+    println!("2. View favorites list");
+
     let mut input = String::new();
     io::stdin()
         .read_line(&mut input)
         .expect("Failed to read line");
 
-    //Send API request
-    let response = reqwest::get(url)
-        .await?
-        .json::<serde_json::Value>()
-        .await?;
+    //If view new image
+    match input.trim().parse::<u32>() {
+        Ok(1) => {
+            println!("Looking for ducks...");
 
-    //Get API response
-    let api_info = build_api_info(response["detail_url"].to_string(),
-                                           response["title"].to_string(),
-                                           response["description"].to_string());
+            //Send API request
+            let response = reqwest::get(&url)
+                .await?
+                .json::<serde_json::Value>()
+                .await?;
 
-    //Display API info
-    println!("Duck found!{}", api_info.display());
-    
-    //Reading from .txt file
-    let contents: String = read_file(&filename);
-    println!("{contents}");
+            //Get API response
+            let api_info = build_api_info(response["detail_url"].to_string(),
+                                                response["title"].to_string(),
+                                                response["description"].to_string());
+
+            //Display API info
+            println!("Duck found!{}", api_info.display());
+        }
+
+        //View favorites list
+        Ok(2) => {
+            //Reading from .txt file
+            let favorites = read_file(&filename);
+            for duck in favorites {
+                println!("{}", duck);
+            }
+        }
+
+        _ => {
+            println!("Invalid option. Please enter 1 or 2.");
+        }
+    }
 
     //Saving to .txt file
     save_to_file(String::from("duck_file"));
@@ -58,13 +77,11 @@ fn build_api_info(detail_url: String, title: String, description: String) -> Api
     }
 }
 
-fn read_file(filename: &String) -> String {
-    //println!("Reading file \"{}\"...", filename);
-    fs::read_to_string(filename).expect("Can't read file")
-    //println!("Got file {}!", filename);
-    //println!("File contents: {}", contents);
+fn read_file(filename: &String) -> Vec<String> {
+    let contents = fs::read_to_string(filename).expect("Failed to read file");
+    contents.lines().map(|l| l.to_string()).collect()
 }
 
 fn save_to_file(filename: String) {
-    println!("File {} has been saved!", filename);
+    //println!("File {} has been saved!", filename);
 }
