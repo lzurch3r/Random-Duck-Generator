@@ -1,4 +1,4 @@
-# Project Title (Update)
+# Random Duck Generator
 
 Add a description of your project here.
 
