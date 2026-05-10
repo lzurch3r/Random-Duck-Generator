@@ -8,7 +8,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let url = format!("https://ducks.now/api/v0/random");
 
     //Prompt user to view new image or view favorites list
-    println!("MAIN MENU\nType a number:");
+    println!("MAIN MENU\nType a number and press Enter:");
     println!("1. View random duck image");
     println!("2. View favorites list");
 
@@ -34,12 +34,47 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                                                 response["description"].to_string());
 
             //Display API info
-            println!("Duck found!{}", api_info.display());
+            println!("Duck found!\n{}", api_info.display());
+
+            //Prompt user to save duck as favorite
+            println!("Would you like to add this precious duck to your favorites? (y)es or (n)o");
+            let mut input = String::new();
+
+            io::stdin()
+                .read_line(&mut input)
+                .expect("Failed to read line");
+
+            let input = input.trim();
+
+            //Match case to save or not
+            match input {
+                //If (y)es, save to .txt file
+                "y" => {
+                    //Read from .txt file into vector
+                    let mut favorites = read_file(&filename);
+
+                    //Push new data into vector
+                    favorites.push(api_info.save_to_file());
+
+                    //Saving to .txt file
+                    save_to_file(favorites, filename.clone());
+                }
+
+                //If (n)o, end program
+                "n" => {
+                    println!("Thanks for watching the ducks!\n\n");
+                }
+
+                //Default case, end program
+                _ => {
+                    println!("Invalid option. Please enter y or n.");
+                }
+            }
         }
 
         //View favorites list
         Ok(2) => {
-            //Reading from .txt file
+            //Reading from .txt file and end program
             let favorites = read_file(&filename);
             for duck in favorites {
                 println!("{}", duck);
@@ -51,8 +86,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
     }
 
-    //Saving to .txt file
-    save_to_file(String::from("duck_file"));
+
 
     Ok(())
 }
@@ -65,6 +99,10 @@ struct ApiInfo {
 impl ApiInfo {
     fn display(&self) -> String {
         format!("\nImage URL (copy and paste into browser): {}\nTitle: {}\nDescription: {}",
+            self.detail_url, self.title, self.description)
+    }
+    fn save_to_file(&self) -> String {
+        format!("Image URL (copy and paste into browser): {} Title: {} Description: {}",
             self.detail_url, self.title, self.description)
     }
 }
@@ -82,6 +120,8 @@ fn read_file(filename: &String) -> Vec<String> {
     contents.lines().map(|l| l.to_string()).collect()
 }
 
-fn save_to_file(filename: String) {
+fn save_to_file(favorites: Vec<String>, filename: String) {
+    let contents = favorites.join("\n");
+    fs::write(&filename, contents).expect("Failed to write file");
     println!("File {} has been saved!", filename);
 }

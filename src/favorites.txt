@@ -1,2 +1,3 @@
 Image URL (copy and paste into browser): "https://ducks.now/duck/42/" Title: "Duck Family" Description: "Mallard family walking through Fantasyland at Disneyland."
 Image URL (copy and paste into browser): "https://ducks.now/duck/42/" Title: "Duck Family" Description: "Mallard family walking through Fantasyland at Disneyland."
+Image URL (copy and paste into browser): "https://ducks.now/duck/4/" Title: "Pair Of Swimming Mallard Ducks" Description: "A male and female mallard duck (Anas platyrhynchos) swimming in a pond\r\n\r\nCanon EOS Digital Rebel XSi 1/400s, f 6.3, ISO 200, 225 mm"
