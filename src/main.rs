@@ -1,11 +1,18 @@
 use std::fs;
 use std::io;
+use std::path::Path;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
+
     //Initialize variables
     let filename = format!("src/favorites.txt");
     let url = format!("https://ducks.now/api/v0/random");
+
+    //Create a favorites document if none exists
+    if !Path::new(&filename).exists() {
+        fs::write(&filename, "").expect("Failed to create favorites.txt");
+    }
 
     //Prompt user to view new image or view favorites list
     println!("MAIN MENU\nType a number and press Enter:");
@@ -62,7 +69,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
                 //If (n)o, end program
                 "n" => {
-                    println!("Thanks for watching the ducks!\n\n");
+                    println!("Thanks for watching the ducks!");
                 }
 
                 //Default case, end program
@@ -76,9 +83,18 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         Ok(2) => {
             //Reading from .txt file and end program
             let favorites = read_file(&filename);
-            for duck in favorites {
-                println!("{}", duck);
+            
+            //Check if favorites file is empty
+            if favorites.is_empty() {
+                println!("No ducks have been claimed as your favorites (sad quack).");
             }
+            else {
+                println!("\nHere are your favorite ducks!");
+                for duck in favorites {
+                    println!("\n{}", duck);
+                }
+        }
+            
         }
 
         _ => {
@@ -86,8 +102,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
     }
 
-
-
+    //Add whitespace to terminal
+    println!("");
     Ok(())
 }
 struct ApiInfo {
@@ -116,12 +132,12 @@ fn build_api_info(detail_url: String, title: String, description: String) -> Api
 }
 
 fn read_file(filename: &String) -> Vec<String> {
-    let contents = fs::read_to_string(filename).expect("Failed to read file");
+    let contents = fs::read_to_string(&filename).expect("Failed to read file");
     contents.lines().map(|l| l.to_string()).collect()
 }
 
 fn save_to_file(favorites: Vec<String>, filename: String) {
     let contents = favorites.join("\n");
-    fs::write(&filename, contents).expect("Failed to write file");
-    println!("File {} has been saved!", filename);
+    fs::write(&filename, contents.trim()).expect("Failed to write file");
+    println!("You saved a duck (to your favorites)!");
 }
