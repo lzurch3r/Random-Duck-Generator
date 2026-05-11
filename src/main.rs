@@ -21,10 +21,16 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let mut input = String::new();
 
-    while input.trim() != "1" || input.trim() != "2" {
-    io::stdin()
-        .read_line(&mut input)
-        .expect("Failed to read line");
+    while input.trim().parse::<u32>() != Ok(1) && input.trim().parse::<u32>() != Ok(2) {
+        input = String::new();
+
+        io::stdin()
+            .read_line(&mut input)
+            .expect("Failed to read line");
+
+        if input.trim().parse::<u32>() != Ok(1) && input.trim().parse::<u32>() != Ok(2) {
+            println!("Not a valid option. Please type 1 or 2 and press Enter:");
+        }
     }
 
     //If view new image
