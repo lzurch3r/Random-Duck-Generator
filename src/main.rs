@@ -20,9 +20,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("2. View favorites list");
 
     let mut input = String::new();
+
+    while input.trim() != "1" || input.trim() != "2" {
     io::stdin()
         .read_line(&mut input)
         .expect("Failed to read line");
+    }
 
     //If view new image
     match input.trim().parse::<u32>() {
